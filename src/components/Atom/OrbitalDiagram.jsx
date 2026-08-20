@@ -1,12 +1,5 @@
 import { useMemo, useState } from "react";
 
-const orbitalCapacity = {
-  s: 2,
-  p: 6,
-  d: 10,
-  f: 14,
-};
-
 const orbitalBoxes = {
   s: 1,
   p: 3,
@@ -14,249 +7,422 @@ const orbitalBoxes = {
   f: 7,
 };
 
-function getOrbitalType(orbital) {
-  return orbital
-    .replace(/[0-9]/g, "");
+const orbitalCapacity = {
+  s: 2,
+  p: 6,
+  d: 10,
+  f: 14,
+};
+
+function getType(orbital) {
+  return orbital.replace(/[0-9]/g, "");
 }
 
-function getOrbitalNumber(orbital) {
+function getShell(orbital) {
   return Number(
     orbital.replace(/[a-z]/g, "")
   );
 }
 
-function buildElectrons(
-  electrons,
-  boxCount
-) {
-  const result = Array(
-    boxCount
-  ).fill(0);
-
-  /*
-   * Hund's rule:
-   * fill each orbital singly first,
-   * then start pairing.
-   */
+function fillBoxes(electrons, boxCount) {
+  const boxes = Array(boxCount).fill(0);
 
   let remaining = electrons;
 
+  // Hund's rule:
+  // first place one electron in each orbital
   for (
     let i = 0;
     i < boxCount && remaining > 0;
     i++
   ) {
-    result[i] = 1;
+    boxes[i] = 1;
     remaining--;
   }
 
+  // Then pair electrons
   for (
     let i = 0;
     i < boxCount && remaining > 0;
     i++
   ) {
-    result[i] = 2;
+    boxes[i] = 2;
     remaining--;
   }
 
-  return result;
+  return boxes;
 }
 
 export default function OrbitalDiagram({
   orbitals = [],
 }) {
-  const [activeOrbital, setActiveOrbital] =
+  const [selectedOrbital, setSelectedOrbital] =
     useState(null);
 
-  const grouped = useMemo(() => {
-    return orbitals.map((orbital) => {
-      const type =
-        getOrbitalType(
-          orbital.orbital
-        );
-
-      const number =
-        getOrbitalNumber(
-          orbital.orbital
-        );
+  const orbitalData = useMemo(() => {
+    return orbitals.map((item) => {
+      const type = getType(
+        item.orbital
+      );
 
       const boxCount =
-        orbitalBoxes[type];
-
-      const electrons =
-        buildElectrons(
-          orbital.electrons,
-          boxCount
-        );
+        orbitalBoxes[type] || 1;
 
       return {
-        ...orbital,
+        ...item,
+
         type,
-        number,
+
+        shell: getShell(
+          item.orbital
+        ),
+
         boxCount,
-        electrons,
+
+        capacity:
+          orbitalCapacity[type],
+
+        boxes: fillBoxes(
+          item.electrons,
+          boxCount
+        ),
       };
     });
   }, [orbitals]);
 
+  const totalElectrons =
+    orbitalData.reduce(
+      (total, orbital) =>
+        total + orbital.electrons,
+      0
+    );
+
   return (
     <div className="orbital-diagram">
 
-      <div className="orbital-header">
+      {/* =================================================
+          HEADER
+      ================================================= */}
 
-        <div>
-          <span className="configuration-label">
-            ELECTRON CONFIGURATION
-          </span>
+      <div className="orbital-config-header">
 
-          <h3>
-            Orbital Occupancy
-          </h3>
+        <div className="orbital-config-title">
+
+          <div className="orbital-config-icon">
+            e⁻
+          </div>
+
+          <div>
+
+            <div className="configuration-label">
+              ELECTRON CONFIGURATION
+            </div>
+
+            <h3>
+              Orbital Structure
+            </h3>
+
+          </div>
+
         </div>
 
-        <div className="orbital-legend">
-          ↑↓
+        <div className="electron-count-badge">
           <span>
-            electron pair
+            ELECTRONS
           </span>
+
+          <strong>
+            {totalElectrons}
+          </strong>
         </div>
 
       </div>
 
-      <div className="energy-axis">
+      {/* =================================================
+          LEGEND
+      ================================================= */}
+
+      <div className="orbital-legend">
+
+        <div className="legend-item">
+
+          <span className="legend-arrow">
+            ↑
+          </span>
+
+          <span>
+            Spin up
+          </span>
+
+        </div>
+
+        <div className="legend-item">
+
+          <span className="legend-arrow down">
+            ↓
+          </span>
+
+          <span>
+            Spin down
+          </span>
+
+        </div>
+
+        <div className="legend-item">
+
+          <span className="legend-box">
+            2
+          </span>
+
+          <span>
+            Filled orbital
+          </span>
+
+        </div>
+
+      </div>
+
+      {/* =================================================
+          ENERGY LABEL
+      ================================================= */}
+
+      <div className="energy-indicator">
+
         <span>
-          ENERGY
+          HIGHER ENERGY
         </span>
+
+        <div className="energy-line" />
 
         <span>
           ↑
         </span>
+
       </div>
+
+      {/* =================================================
+          ORBITAL LIST
+      ================================================= */}
 
       <div className="orbital-list">
 
-        {grouped
+        {orbitalData
           .slice()
           .reverse()
-          .map((orbital) => (
+          .map((item) => {
 
-            <div
-              className={`orbital-row ${
-                activeOrbital ===
-                orbital.orbital
-                  ? "active"
-                  : ""
-              }`}
-              key={orbital.orbital}
-              onMouseEnter={() =>
-                setActiveOrbital(
-                  orbital.orbital
-                )
-              }
-              onMouseLeave={() =>
-                setActiveOrbital(null)
-              }
-            >
+            const isSelected =
+              selectedOrbital ===
+              item.orbital;
 
-              <div className="orbital-name">
-                {orbital.orbital}
-              </div>
-
-              <div className="orbital-boxes">
-
-                {orbital.electrons.map(
-                  (
-                    electrons,
-                    index
-                  ) => (
-
-                    <div
-                      className="orbital-box"
-                      key={index}
-                    >
-
-                      {electrons >=
-                        1 && (
-                        <span className="electron-arrow">
-                          ↑
-                        </span>
-                      )}
-
-                      {electrons >=
-                        2 && (
-                        <span className="electron-arrow second">
-                          ↓
-                        </span>
-                      )}
-
-                    </div>
-
+            return (
+              <button
+                type="button"
+                key={item.orbital}
+                className={`orbital-row ${
+                  isSelected
+                    ? "selected"
+                    : ""
+                }`}
+                onClick={() =>
+                  setSelectedOrbital(
+                    isSelected
+                      ? null
+                      : item.orbital
                   )
-                )}
+                }
+              >
 
-              </div>
+                {/* ORBITAL NAME */}
 
-              <div className="orbital-count">
-                {orbital.electrons}
-              </div>
+                <div className="orbital-name-area">
 
-            </div>
+                  <span className="orbital-name">
+                    {item.orbital}
+                  </span>
 
-          ))}
+                  <span className="orbital-type">
+                    {item.type.toUpperCase()}
+                  </span>
+
+                </div>
+
+                {/* BOXES */}
+
+                <div className="orbital-boxes">
+
+                  {item.boxes.map(
+                    (
+                      electrons,
+                      index
+                    ) => (
+
+                      <span
+                        className={`orbital-box ${
+                          electrons === 2
+                            ? "filled"
+                            : electrons === 1
+                            ? "single"
+                            : "empty"
+                        }`}
+                        key={index}
+                      >
+
+                        {electrons >=
+                          1 && (
+                          <span className="spin-up">
+                            ↑
+                          </span>
+                        )}
+
+                        {electrons >=
+                          2 && (
+                          <span className="spin-down">
+                            ↓
+                          </span>
+                        )}
+
+                      </span>
+
+                    )
+                  )}
+
+                </div>
+
+                {/* ELECTRON COUNT */}
+
+                <div className="orbital-electron-count">
+
+                  <strong>
+                    {item.electrons}
+                  </strong>
+
+                  <span>
+                    / {item.capacity}
+                  </span>
+
+                </div>
+
+              </button>
+            );
+          })}
 
       </div>
 
-      {activeOrbital && (
-        <div className="orbital-tooltip">
+      {/* =================================================
+          SELECTED ORBITAL INLINE DETAIL
+      ================================================= */}
 
-          <strong>
-            {activeOrbital}
-          </strong>
+      {selectedOrbital && (
+        <div className="selected-orbital-strip">
 
-          <span>
-            {getOrbitalType(
-              activeOrbital
-            ).toUpperCase()} orbital
-          </span>
+          <div className="selected-orbital-symbol">
+            {selectedOrbital}
+          </div>
+
+          <div className="selected-orbital-info">
+
+            <strong>
+              {getType(
+                selectedOrbital
+              ).toUpperCase()} SUBSHELL
+            </strong>
+
+            <span>
+              Shell{" "}
+              {getShell(
+                selectedOrbital
+              )}
+            </span>
+
+          </div>
+
+          <div className="selected-orbital-capacity">
+
+            <span>
+              CAPACITY
+            </span>
+
+            <strong>
+              {orbitalCapacity[
+                getType(
+                  selectedOrbital
+                )
+              ]}
+            </strong>
+
+          </div>
 
         </div>
       )}
 
-      <div className="orbital-rules">
+      {/* =================================================
+          PRINCIPLES
+      ================================================= */}
 
-        <div>
-          <strong>
-            AUFBAU
-          </strong>
+      <div className="orbital-principles">
 
-          <span>
-            Lower-energy orbitals
-            fill first.
-          </span>
+        <div className="principle">
+
+          <div className="principle-number">
+            01
+          </div>
+
+          <div>
+
+            <strong>
+              AUFBAU
+            </strong>
+
+            <span>
+              Lower-energy orbitals
+              fill first.
+            </span>
+
+          </div>
+
         </div>
 
-        <div>
-          <strong>
-            HUND
-          </strong>
+        <div className="principle">
 
-          <span>
-            Electrons occupy
-            equal-energy orbitals
-            singly before pairing.
-          </span>
+          <div className="principle-number">
+            02
+          </div>
+
+          <div>
+
+            <strong>
+              HUND
+            </strong>
+
+            <span>
+              Equal-energy orbitals
+              fill singly before pairing.
+            </span>
+
+          </div>
+
         </div>
 
-        <div>
-          <strong>
-            PAULI
-          </strong>
+        <div className="principle">
 
-          <span>
-            Each orbital holds
-            at most two electrons
-            with opposite spins.
-          </span>
+          <div className="principle-number">
+            03
+          </div>
+
+          <div>
+
+            <strong>
+              PAULI
+            </strong>
+
+            <span>
+              Two electrons maximum
+              per orbital.
+            </span>
+
+          </div>
+
         </div>
 
       </div>
