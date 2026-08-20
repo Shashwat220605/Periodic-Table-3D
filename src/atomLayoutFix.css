@@ -1,0 +1,22 @@
+/* Keep the atom information panel clear of the bottom element controls. */
+.atom-panel {
+  right: 28px;
+  bottom: 105px !important;
+  max-height: calc(100vh - 205px);
+}
+
+/* Keep previous/next element controls visible below the atom panel. */
+.atom-panel ~ .element-navigation {
+  z-index: 60;
+  bottom: 34px;
+}
+
+@media (max-width: 900px) {
+  .atom-panel {
+    right: 14px;
+    left: 14px;
+    bottom: 92px !important;
+    width: auto;
+    max-height: 48vh;
+  }
+}
