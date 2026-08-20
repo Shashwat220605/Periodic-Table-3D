@@ -1,0 +1,108 @@
+.element-navigation-overlay {
+  position: fixed;
+  z-index: 100000;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  width: min(1120px, calc(100vw - 80px));
+  height: 58px;
+  display: grid;
+  grid-template-columns: 1fr 150px 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 18px;
+  border: 1px solid rgba(132, 204, 22, .28);
+  border-radius: 15px;
+  background: linear-gradient(90deg, rgba(2,10,14,.98), rgba(5,18,23,.96), rgba(2,10,14,.98));
+  box-shadow: 0 20px 65px rgba(0,0,0,.58), 0 0 30px rgba(132,204,22,.05);
+  backdrop-filter: blur(18px);
+  pointer-events: auto;
+}
+
+.element-overlay-button {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #84cc16;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  cursor: pointer;
+}
+
+.element-overlay-button:hover {
+  color: #bef264;
+  background: rgba(132,204,22,.08);
+}
+
+.element-overlay-next {
+  justify-content: flex-end;
+}
+
+.element-overlay-arrow {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.element-overlay-center {
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid rgba(132,204,22,.08);
+  border-right: 1px solid rgba(132,204,22,.08);
+}
+
+.element-overlay-label {
+  color: #475569;
+  font-size: 5px;
+  font-weight: 800;
+  letter-spacing: .18em;
+}
+
+.element-overlay-center strong {
+  margin-top: 2px;
+  color: #f8fafc;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.element-overlay-center small {
+  color: #475569;
+  font-size: 6px;
+  margin-top: 2px;
+}
+
+@media (max-width: 760px) {
+  .element-navigation-overlay {
+    bottom: 12px;
+    width: calc(100vw - 24px);
+    grid-template-columns: 1fr 78px 1fr;
+    gap: 4px;
+    padding: 6px 7px;
+  }
+
+  .element-overlay-button {
+    padding: 0 7px;
+    font-size: 5px;
+    gap: 5px;
+  }
+
+  .element-overlay-arrow {
+    font-size: 15px;
+  }
+
+  .element-overlay-label {
+    font-size: 4px;
+  }
+
+  .element-overlay-center strong {
+    font-size: 12px;
+  }
+}
