@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./PageNavigation.css";
 
 export default function PageNavigation() {
   const [page, setPage] = useState(1);
@@ -25,22 +26,12 @@ export default function PageNavigation() {
 
   const goNext = () => {
     if (page !== 1) return;
-
-    const button = document.querySelector(
-      ".primary-action"
-    );
-
-    button?.click();
+    document.querySelector(".primary-action")?.click();
   };
 
   const goPrevious = () => {
     if (page !== 2) return;
-
-    const button = document.querySelector(
-      ".back-button"
-    );
-
-    button?.click();
+    document.querySelector(".back-button")?.click();
   };
 
   return (
