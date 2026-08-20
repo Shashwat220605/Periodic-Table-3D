@@ -16,7 +16,24 @@ export default function TrendsExplorer({ onSelectElement }) {
     elements.forEach((element) => { const period = element.period ?? 1; if (!map.has(period)) map.set(period, []); map.get(period).push(element); });
     return [...map.entries()].sort((a, b) => a[0] - b[0]);
   }, []);
-  const selectElement = (element) => { setOpen(false); setHovered(null); onSelectElement?.(element); };
+
+  const selectElement = (element) => {
+    setOpen(false);
+    setHovered(null);
+    const input = document.querySelector(".search-wrapper input");
+    if (input) {
+      const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set;
+      setter?.call(input, element.name);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+      requestAnimationFrame(() => {
+        const result = [...document.querySelectorAll(".search-results button")].find((button) => button.textContent?.toLowerCase().includes(element.name.toLowerCase()));
+        result?.click();
+      });
+    } else {
+      onSelectElement?.(element);
+    }
+  };
 
   return <>
     <button className="trends-launcher" onClick={() => setOpen(true)}>
@@ -33,7 +50,7 @@ export default function TrendsExplorer({ onSelectElement }) {
         <div className="trend-table">{groups.map(([period, row]) => <div className="trend-row" key={period}><span className="period-number">{period}</span><div className="trend-elements">{row.map((element) => { const value = getTrendValue(element, trendKey); const intensity = getTrendColorIntensity(value, min, max); return <button className={`trend-element ${hovered?.number === element.number ? "active" : ""}`} key={element.number} style={{ opacity: value == null ? 0.22 : 0.28 + intensity * 0.72 }} onMouseEnter={() => setHovered(element)} onMouseLeave={() => setHovered(null)} onClick={() => selectElement(element)}><span className="trend-symbol">{element.symbol}</span><span className="trend-number">{element.number}</span></button>; })}</div></div>)}</div>
         <div className="trend-direction"><span>LOW</span><div className="direction-arrow">→</div><span>HIGH</span></div>
       </div>
-      {hovered && <div className="trend-inspector"><div className="trend-inspector-symbol">{hovered.symbol}</div><div><span>{hovered.name}</span><strong>{getTrendValue(hovered, trendKey) == null ? "Data unavailable" : trend.format(getTrendValue(hovered, trendKey))}</strong></div><button onClick={() => selectElement(hovered)}>EXPLORE ATOM →</button></div>}
+      {hovered && <div className="trend-inspector"><div className="trend-inspector-symbol">{hovered.symbol}</div><div><span>{hovered.name}</span><strong>{getTrendValue(hovered, trendKey) == null ? "Data unavailable" : trend.format(getTrendValue(hovered, trendKey))}</strong></div><button onClick={() => selectElement(hovered)}>OPEN ELECTRON CONFIG →</button></div>}
     </section>}
   </>;
 }
