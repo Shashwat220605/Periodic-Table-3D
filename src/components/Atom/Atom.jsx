@@ -1,38 +1,9 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { Html, Text } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
 import Nucleus from "./Nucleus";
 import ElectronShell from "./ElectronShell";
 import { getElectronConfiguration, getShellConfiguration } from "../../data/electronConfiguration";
 import "./atomPhysics.css";
-
-function AtomicField({ intensity }) {
-  const ref = useRef();
-  useFrame(({ clock }) => {
-    if (!ref.current) return;
-    const t = clock.elapsedTime;
-    ref.current.rotation.y = t * 0.08;
-    const pulse = 1 + Math.sin(t * 1.8) * 0.025 * intensity;
-    ref.current.scale.setScalar(pulse);
-    ref.current.material.opacity = 0.035 + Math.sin(t * 1.8) * 0.012 * intensity;
-  });
-  return <mesh ref={ref}><sphereGeometry args={[1.18, 48, 48]} /><meshBasicMaterial color="#38bdf8" transparent opacity={0.035} depthWrite={false} wireframe /></mesh>;
-}
-
-function EmissionWave({ color = "#38bdf8", speed = 0.5, intensity = 1 }) {
-  const ref = useRef();
-  useFrame(({ clock }) => {
-    if (!ref.current) return;
-    const phase = (clock.elapsedTime * speed) % 1;
-    const eased = 1 - Math.pow(1 - phase, 3);
-    const scale = 0.35 + eased * 3.2;
-    const fade = Math.sin(phase * Math.PI);
-    ref.current.scale.setScalar(scale);
-    ref.current.material.opacity = fade * 0.22 * intensity;
-    ref.current.rotation.y = clock.elapsedTime * 0.15;
-  });
-  return <mesh ref={ref}><sphereGeometry args={[1, 48, 48]} /><meshBasicMaterial color={color} transparent opacity={0.12} wireframe depthWrite={false} /></mesh>;
-}
 
 export default function Atom({ element, onInspect }) {
   const [energyMode, setEnergyMode] = useState("stable");
@@ -40,11 +11,8 @@ export default function Atom({ element, onInspect }) {
   const shells = useMemo(() => getShellConfiguration(element.number), [element.number]);
   const neutrons = Math.max(0, Math.round(Number(element.mass)) - element.number);
   const energyMultiplier = energyMode === "excited" ? 1.9 : energyMode === "ionized" ? 2.6 : 1;
-  const waveIntensity = energyMode === "stable" ? 0.7 : energyMode === "excited" ? 1.15 : 1.5;
 
   return <group>
-    <AtomicField intensity={energyMultiplier} />
-    <EmissionWave speed={0.24 * energyMultiplier} intensity={waveIntensity} color={energyMode === "ionized" ? "#c084fc" : "#38bdf8"} />
     <Nucleus protons={element.number} neutrons={neutrons} onInspect={onInspect} />
     {shells.map((shell, index) => <ElectronShell key={shell.shell} shell={1.5 + index * 0.75} orbital={configuration.orbitals?.find((orbital) => Number(orbital.orbital[0]) === shell.shell)?.orbital || `Shell ${shell.shell}`} count={shell.electrons} speed={(1.4 / (index + 1)) * energyMultiplier} inclination={index % 2 === 0 ? 0 : Math.PI * 0.35} onInspect={onInspect} energyMode={energyMode} />)}
 
