@@ -9,6 +9,7 @@ import AtomBuilder from './components/AtomBuilder/AtomBuilder.jsx'
 import TrendsExplorer from './components/Trends/TrendsExplorer.jsx'
 import CombinationLab from './components/ChemistryLab/CombinationLab.jsx'
 import OrbitalVisualizer from './components/OrbitalLab/OrbitalVisualizer.jsx'
+import TransitionLab from './components/TransitionLab/TransitionLab.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -18,5 +19,6 @@ createRoot(document.getElementById('root')).render(
     <TrendsExplorer />
     <CombinationLab />
     <OrbitalVisualizer />
+    <TransitionLab />
   </StrictMode>,
 )
