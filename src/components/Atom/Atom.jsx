@@ -19,29 +19,19 @@ function AtomicField({ intensity }) {
   return <mesh ref={ref}><sphereGeometry args={[1.18, 48, 48]} /><meshBasicMaterial color="#38bdf8" transparent opacity={0.035} depthWrite={false} wireframe /></mesh>;
 }
 
-function EnergyWave({ radius, speed, color = "#38bdf8", delay = 0, intensity = 1 }) {
+function EmissionWave({ color = "#38bdf8", speed = 0.5, intensity = 1 }) {
   const ref = useRef();
-  const innerRef = useRef();
   useFrame(({ clock }) => {
-    if (!ref.current || !innerRef.current) return;
-    const t = clock.elapsedTime * speed + delay;
-    const phase = t % 1;
-    const eased = 1 - Math.pow(1 - phase, 2);
-    const scale = radius * (0.72 + eased * 0.48);
-    ref.current.scale.setScalar(scale);
-    innerRef.current.scale.setScalar(scale * 0.94);
+    if (!ref.current) return;
+    const phase = (clock.elapsedTime * speed) % 1;
+    const eased = 1 - Math.pow(1 - phase, 3);
+    const scale = 0.35 + eased * 3.2;
     const fade = Math.sin(phase * Math.PI);
-    ref.current.material.opacity = fade * 0.2 * intensity;
-    innerRef.current.material.opacity = fade * 0.055 * intensity;
-    ref.current.rotation.x = t * 0.12;
-    ref.current.rotation.y = t * 0.2;
-    innerRef.current.rotation.x = -t * 0.09;
-    innerRef.current.rotation.z = t * 0.14;
+    ref.current.scale.setScalar(scale);
+    ref.current.material.opacity = fade * 0.22 * intensity;
+    ref.current.rotation.y = clock.elapsedTime * 0.15;
   });
-  return <group>
-    <mesh ref={ref}><sphereGeometry args={[1, 48, 48]} /><meshBasicMaterial color={color} transparent opacity={0.1} wireframe depthWrite={false} /></mesh>
-    <mesh ref={innerRef}><sphereGeometry args={[1, 24, 24]} /><meshBasicMaterial color={color} transparent opacity={0.04} wireframe depthWrite={false} /></mesh>
-  </group>;
+  return <mesh ref={ref}><sphereGeometry args={[1, 48, 48]} /><meshBasicMaterial color={color} transparent opacity={0.12} wireframe depthWrite={false} /></mesh>;
 }
 
 export default function Atom({ element, onInspect }) {
@@ -50,13 +40,11 @@ export default function Atom({ element, onInspect }) {
   const shells = useMemo(() => getShellConfiguration(element.number), [element.number]);
   const neutrons = Math.max(0, Math.round(Number(element.mass)) - element.number);
   const energyMultiplier = energyMode === "excited" ? 1.9 : energyMode === "ionized" ? 2.6 : 1;
-  const waveIntensity = energyMode === "stable" ? 0.72 : energyMode === "excited" ? 1.15 : 1.55;
+  const waveIntensity = energyMode === "stable" ? 0.7 : energyMode === "excited" ? 1.15 : 1.5;
 
   return <group>
     <AtomicField intensity={energyMultiplier} />
-    <EnergyWave radius={1.65} speed={0.28 * energyMultiplier} delay={0} intensity={waveIntensity} />
-    <EnergyWave radius={2.25} speed={0.22 * energyMultiplier} delay={0.38} color="#a78bfa" intensity={waveIntensity * 0.9} />
-    <EnergyWave radius={2.9} speed={0.17 * energyMultiplier} delay={0.72} color="#38bdf8" intensity={waveIntensity * 0.72} />
+    <EmissionWave speed={0.24 * energyMultiplier} intensity={waveIntensity} color={energyMode === "ionized" ? "#c084fc" : "#38bdf8"} />
     <Nucleus protons={element.number} neutrons={neutrons} onInspect={onInspect} />
     {shells.map((shell, index) => <ElectronShell key={shell.shell} shell={1.5 + index * 0.75} orbital={configuration.orbitals?.find((orbital) => Number(orbital.orbital[0]) === shell.shell)?.orbital || `Shell ${shell.shell}`} count={shell.electrons} speed={(1.4 / (index + 1)) * energyMultiplier} inclination={index % 2 === 0 ? 0 : Math.PI * 0.35} onInspect={onInspect} energyMode={energyMode} />)}
 
