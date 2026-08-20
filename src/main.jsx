@@ -5,6 +5,7 @@ import './atomLayoutFix.css'
 import './atomicExplorerTheme.css'
 import App from './App.jsx'
 import PageNavigation from './components/PageNavigation.jsx'
+import ElementNavigationOverlay from './components/ElementNavigationOverlay.jsx'
 import AtomBuilder from './components/AtomBuilder/AtomBuilder.jsx'
 import TrendsExplorer from './components/Trends/TrendsExplorer.jsx'
 import CombinationLab from './components/ChemistryLab/CombinationLab.jsx'
@@ -14,6 +15,7 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
     <PageNavigation />
+    <ElementNavigationOverlay />
     <AtomBuilder />
     <TrendsExplorer />
     <CombinationLab />
