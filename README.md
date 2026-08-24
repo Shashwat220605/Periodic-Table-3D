@@ -1,16 +1,82 @@
-# React + Vite
+# ⚛️ Periodic Explorer 3D
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An interactive 3D periodic table built with React, Three.js and GSAP. Explore elements, inspect atomic structure, visualize orbitals and electron transitions, and open a live element dossier without leaving the experience.
 
-Currently, two official plugins are available:
+## 🌐 Live Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**[Open Periodic Explorer 3D](https://periodic-table-3-d.vercel.app/)**
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- 🧪 Interactive 3D periodic table with all 118 elements
+- 🔎 Search by element name, symbol or atomic number
+- ⚛️ Animated atom explorer with protons, neutrons and electrons
+- 🌀 Electron configuration and shell visualization
+- ☁️ Orbital Clouds visualizer
+- 🧬 Combination Lab for chemistry exploration
+- ↕️ Transition Lab for electron energy transitions and photon events
+- 📚 **Element Dossier** with atomic data, classification, electron configuration and a live knowledge brief
+- 🎞️ GSAP-powered camera and interface transitions
+- 📱 Responsive UI for smaller screens
 
-## Expanding the ESLint configuration
+## 🧰 Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React + Vite
+- React Three Fiber
+- Three.js
+- Drei
+- React Three Postprocessing
+- GSAP
+- CSS
+
+## 🚀 Run Locally
+
+```bash
+git clone https://github.com/Shashwat220605/Periodic-Table-3D.git
+cd Periodic-Table-3D
+npm install
+npm run dev
+```
+
+Then open the local Vite URL shown in your terminal.
+
+## 🧭 How to Explore
+
+1. Browse the 3D periodic table.
+2. Search for an element or select one directly.
+3. Use **EXPLORE** to enter the atomic explorer.
+4. Open **ELEMENT DOSSIER** for a deeper profile.
+5. Try Orbital Clouds, Combination Lab and Transition Lab for interactive chemistry tools.
+
+## 📖 Element Dossier
+
+The dossier combines the project's local atomic dataset with a live public knowledge brief from Wikipedia's summary API. Local atomic information remains available even if the external knowledge request fails.
+
+## 🗂️ Project Structure
+
+```text
+src/
+├── components/
+│   ├── Atom/
+│   ├── ChemistryLab/
+│   ├── ElementDossier/
+│   ├── OrbitalLab/
+│   ├── TransitionLab/
+│   └── PeriodicTable/
+├── data/
+├── App.jsx
+└── main.jsx
+```
+
+## 🔮 Roadmap
+
+- Element comparison laboratory
+- Interactive isotope explorer
+- Periodic trend visualization upgrades
+- Chemistry quiz mode
+- Electron configuration builder
+- Expanded element facts and historical data
+
+## 📄 License
+
+This project is intended as an educational and portfolio project.
