@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import gsap from "gsap";
 import PeriodicTable from "./components/PeriodicTable/PeriodicTable";
 import Atom from "./components/Atom/Atom";
+import ElementDossier from "./components/ElementDossier/ElementDossier";
 import elements from "./data/elements";
 import { getElectronConfiguration, getShellConfiguration } from "./data/electronConfiguration";
 import "./index.css";
@@ -45,6 +46,7 @@ function App() {
   const [search, setSearch] = useState("");
   const [transition, setTransition] = useState(null);
   const [inspection, setInspection] = useState(null);
+  const [dossierElement, setDossierElement] = useState(null);
   const featuredElement = elements[index];
 
   const filteredElements = useMemo(() => {
@@ -127,7 +129,10 @@ function App() {
       <h1 key={featuredElement.number} className="hero-title">{featuredElement.name}</h1>
       <div className="hero-meta"><span>{featuredElement.symbol}</span><span className="dot">•</span><span>{featuredElement.mass} u</span><span className="dot">•</span><span>{featuredElement.category.replaceAll("-", " ").toUpperCase()}</span></div>
       <p className="hero-description">Explore the structure, properties and atomic composition of {featuredElement.name}.</p>
-      <button className="primary-action" onClick={exploreAtom}>EXPLORE {featuredElement.symbol}<span>→</span></button>
+      <div className="hero-actions">
+        <button className="primary-action" onClick={exploreAtom}>EXPLORE {featuredElement.symbol}<span>→</span></button>
+        <button className="dossier-action" onClick={() => setDossierElement(featuredElement)}>ELEMENT DOSSIER<span>↗</span></button>
+      </div>
     </section>}
 
     {mode === "atom" && selected && <aside className="atom-panel">
@@ -143,6 +148,7 @@ function App() {
         <div className="detail-row"><span>PERIOD</span><strong>{selected.period}</strong></div>
         <div className="detail-row"><span>GROUP</span><strong>{selected.group || "—"}</strong></div>
       </div>
+      <button className="atom-dossier-button" onClick={() => setDossierElement(selected)}>OPEN ELEMENT DOSSIER <span>↗</span></button>
       <div className="electron-configuration">
         <OrbitalDiagram orbitals={selectedElectronData?.orbitals} />
         <div className="configuration-label">ELECTRON CONFIGURATION</div>
@@ -153,6 +159,8 @@ function App() {
       <p className="atom-description">Click the nucleus, protons, neutrons or electrons to inspect their properties.</p>
       {inspection && <div className="inspection-card"><button className="inspection-close" onClick={() => setInspection(null)}>×</button>{inspection.type === "nucleus" && <><div className="inspection-label">NUCLEUS</div><h3>Atomic Nucleus</h3><p>The dense central region containing the protons and neutrons of the atom.</p></>}{inspection.type === "proton" && <><div className="inspection-label proton">PROTON</div><h3>Proton</h3><p>Positively charged particle found inside the nucleus.</p></>}{inspection.type === "neutron" && <><div className="inspection-label neutron">NEUTRON</div><h3>Neutron</h3><p>Electrically neutral particle found inside the nucleus.</p></>}{inspection.type === "electron" && <><div className="inspection-label electron">ELECTRON</div><h3>Electron</h3><p>A negatively charged elementary particle associated with the atom's electron cloud.</p></>}</div>}
     </aside>}
+
+    {dossierElement && <ElementDossier element={dossierElement} onClose={() => setDossierElement(null)} />}
   </main>;
 }
 
