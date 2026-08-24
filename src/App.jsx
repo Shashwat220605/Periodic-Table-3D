@@ -10,6 +10,7 @@ import ElementDossier from "./components/ElementDossier/ElementDossier";
 import elements from "./data/elements";
 import { getElectronConfiguration, getShellConfiguration } from "./data/electronConfiguration";
 import "./index.css";
+import "./components/ElementDossier/dossierLayout.css";
 
 function CameraTransition({ active }) {
   const { camera } = useThree();
@@ -92,17 +93,6 @@ function App() {
   const exploreAtom = () => startAtomTransition(featuredElement);
   const exploreDirectly = element => { if (!element) return; setSearch(""); startAtomTransition(element); };
   const backHome = () => { gsap.killTweensOf(document.body); setTransition(null); setInspection(null); setMode("home"); setSelected(null); };
-
-  const changeAtom = direction => {
-    if (!selected) return;
-    const currentIndex = elements.findIndex(element => element.number === selected.number);
-    if (currentIndex === -1) return;
-    const nextIndex = (currentIndex + direction + elements.length) % elements.length;
-    setIndex(nextIndex);
-    setSelected(elements[nextIndex]);
-    setInspection(null);
-  };
-
   const handleInspection = data => { if (data) setInspection(data); };
 
   return <main className="app">
